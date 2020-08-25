@@ -4,7 +4,7 @@ import os
 import datetime as dt
 
 from .models import Event
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from django.core import serializers
 
@@ -22,8 +22,7 @@ def all_ev(request):
     # data = serializers.serialize('json', es)
     fd = open('csvjson.json')
     data = json.load(fd)
-    print(data)
-    return HttpResponse(data)
+    return HttpResponse(json.dumps(data, ensure_ascii=False).encode('utf8'))
 
 
 @api_view(['POST', 'PUT'])
