@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, FlatList, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, FlatList, SafeAreaView, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 import { loadAsync } from 'expo-font';
 import Dash from 'react-native-dash';
@@ -20,13 +20,13 @@ export default function Feed() {
   useEffect(() => {
     _loadAssetsAsync();
   }, []);
-
   if (!loaded) {
     return null;
   }
 
   return (
     <Wrapper>
+      <StatusBar barStyle="light-content" backgroundColor="#161F2A" />
       <TopLine>
         <Menu />
         <Logo>My Phystech</Logo>
