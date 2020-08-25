@@ -1,5 +1,6 @@
 import json
 import re
+import os
 import datetime as dt
 
 from .models import Event
@@ -16,8 +17,12 @@ def home(request):
 
 @api_view(['GET'])
 def all_ev(request):
-    es = Event.objects.all()
-    data = serializers.serialize('json', es)
+    # es = Event.objects.all()
+    # print(es)
+    # data = serializers.serialize('json', es)
+    fd = open('csvjson.json')
+    data = json.load(fd)
+    print(data)
     return HttpResponse(data)
 
 
@@ -37,4 +42,6 @@ def add_event(req):
                   # user_id=int(data.['user_id']))
     res = event.save()
     return HttpResponse(event.id)
+
+
 

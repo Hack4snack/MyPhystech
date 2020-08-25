@@ -25,7 +25,7 @@ SECRET_KEY = 'c70fs4zo%w*me=l7ik+-o*2qygaj_h1)9ht6%&iqtgjg1(%7p+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['myphystech.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'myphystech.herokuapp.com']
 
 
 # Application definition
@@ -51,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -82,8 +81,11 @@ WSGI_APPLICATION = 'MyPhystech.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'default.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+                    'read_default_file': '/home/incredible/.my.cnf',
+                    },
+        #'NAME': os.path.join(BASE_DIR, ''),
     }
 }
 
