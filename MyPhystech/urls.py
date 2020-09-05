@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('all/', views.all_ev),
     path('add/', views.add_event),
+    # path('/', views.add_event),
 ]

@@ -85,7 +85,11 @@ DATABASES = {
         'OPTIONS': {
                     'read_default_file': '/home/incredible/.my.cnf',
                     },
-        #'NAME': os.path.join(BASE_DIR, ''),
+        # 'NAME': 'myphystech',
+        # 'USER': 'rishel',
+        # 'PASSWORD': '25cW4sHpf4Cc',
+        # 'HOST': '109.252.65.71',
+        # 'PORT': '',
     }
 }
 
