@@ -7,7 +7,6 @@ from .models import Event
 from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from django.core import serializers
-from simplejson import dumps
 
 time_re = re.compile(r'^(?P<hours>\d\d):(?P<min>\d\d) (?P<day>\d+)-(?P<month>\d+)-(?P<year>\d{4})$')
 
