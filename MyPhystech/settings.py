@@ -82,14 +82,14 @@ WSGI_APPLICATION = 'MyPhystech.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-                    'read_default_file': '/home/incredible/.my.cnf',
-                    },
-        # 'NAME': 'myphystech',
-        # 'USER': 'rishel',
-        # 'PASSWORD': '25cW4sHpf4Cc',
-        # 'HOST': '109.252.65.71',
-        # 'PORT': '',
+        # 'OPTIONS': {
+                    # 'read_default_file': '/home/incredible/.my.cnf',
+                    # },
+        'NAME': 'myphystech',
+        'USER': 'rish_remote',
+        'PASSWORD': '25cW4sHpf4Cc',
+        'HOST': '109.252.65.71',
+        'PORT': '3306',
     }
 }
 
