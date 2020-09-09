@@ -25,7 +25,7 @@ SECRET_KEY = 'c70fs4zo%w*me=l7ik+-o*2qygaj_h1)9ht6%&iqtgjg1(%7p+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'myphystech.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -39,11 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'event',
     'taggit',
-    'corsheaders',
+    # 'corsheaders',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,10 +85,10 @@ DATABASES = {
         # 'OPTIONS': {
                     # 'read_default_file': '/home/incredible/.my.cnf',
                     # },
-        'NAME': 'myphystech',
-        'USER': 'rish_remote',
-        'PASSWORD': '25cW4sHpf4Cc',
-        'HOST': '109.252.65.71',
+        'NAME': 'Rishel$myphystech',
+        'USER': 'Rishel',
+        'PASSWORD': 'e7hjYDdF9aJZ',
+        'HOST': 'Rishel.mysql.pythonanywhere-services.com',
         'PORT': '3306',
     }
 }
