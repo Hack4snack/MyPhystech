@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from event import views
 
@@ -22,7 +22,19 @@ from event import views
 urlpatterns = [
     path('', views.home),
     path('admin/', admin.site.urls),
-    path('all/', views.all_ev),
-    path('add/', views.add_event),
-    # path('/', views.add_event),
+    path('accounts/', include('django.contrib.auth.urls')),
+]
+
+
+from django.urls import include
+from django.urls import path
+
+urlpatterns += [
+     path('event/', include('event.urls')),
+]
+
+from django.views.generic import RedirectView
+
+urlpatterns += [
+    path('', RedirectView.as_view(url='/event/', permanent=True)),
 ]

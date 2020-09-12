@@ -25,7 +25,7 @@ SECRET_KEY = 'c70fs4zo%w*me=l7ik+-o*2qygaj_h1)9ht6%&iqtgjg1(%7p+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'rishel.pythonanywhere.com']
 
 
 # Application definition
@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'event',
     'taggit',
+    'event',
     # 'corsheaders',
 ]
 
@@ -85,6 +85,9 @@ DATABASES = {
         # 'OPTIONS': {
                     # 'read_default_file': '/home/incredible/.my.cnf',
                     # },
+        'OPTIONS': {
+                    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
         'NAME': 'Rishel$myphystech',
         'USER': 'Rishel',
         'PASSWORD': 'e7hjYDdF9aJZ',
