@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
 import styled from 'styled-components/native';
+import IconAnt from 'react-native-vector-icons/AntDesign';
+import IconF from 'react-native-vector-icons/Feather';
+import { Badge } from 'react-native-elements';
+import LikeButton from "./LikeButton";
+import AddToCalendarButton from "./AddToCalendarButton";
+
+const maxLimit = 88;
 
 export default function Event() {
+  const [ expanded, setExpanded ] = useState(false);
+  const [ liked, setLiked ] = useState(false);
+  const [ added, setAdded ] = useState(false);
+  const fullText = 'Сегодня снова под девяткой всех желающих ждет возможность покидать мячик. Сетка тоже есть. Начало с 19.30.';
+
   return (
     <Wrapper>
       <UpperLine>
@@ -13,13 +25,22 @@ export default function Event() {
         <PublicationDate>2ч назад</PublicationDate>
       </UpperLine>
       <Preview source={{uri: 'https://img4.goodfon.ru/wallpaper/nbig/4/2d/low-poly-voleibol-igra-miach-sportsmen-voleibolist.jpg'}}></Preview>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <Tag>Спорт</Tag>
-        <Time>Завтра, 11:00 - 12:30</Time>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        <LikeButton liked={liked} setLiked={setLiked} />
+        <AddToCalendarButton added={added} setAdded={setAdded} />
       </View>
       <Title>
         Вечером возле 4-ки
       </Title>
+      <Info>
+        <Tag>Спорт</Tag>
+        <Time>Завтра, 11:00 - 12:30</Time>
+      </Info>
+      <FullText>
+        {fullText.length > maxLimit && !expanded ?
+          <Text>{fullText.substring(0, maxLimit-3)}<More onPress={() => setExpanded(true)}>...еще</More></Text> :
+          <Text>{fullText}</Text> }
+      </FullText>
     </Wrapper>
   );
 }
@@ -66,7 +87,7 @@ const Preview = styled.Image`
   width: 100%;
   height: 200px;
   border-radius: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 `;
 
 const Tag = styled.Text`
@@ -83,5 +104,21 @@ const Title = styled.Text`
   font-family: Montserrat;
   font-size: 20px;
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 0px;
+`;
+
+const FullText = styled.Text`
+  color: white;
+  font-size: 13px;
+`;
+
+const More = styled.Text`
+  color: #c1c1c1;
+`;
+
+const Info = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 3px;
+  margin-top: 3px;
 `;

@@ -35,8 +35,8 @@ export default function Feed() {
       <SafeAreaViewStyled>
       <FlatList
         data={[{id: 1}, {id: 2}, {id: 3}]}
-        renderItem={Event}
-        keyExtractor={item => item.id}
+        renderItem={props => <Event {...props} />}
+        keyExtractor={item => String(item.id)}
         ItemSeparatorComponent={() => <Dash dashColor={'#2B3543'} style={{height: 1}} />}
       />
       </SafeAreaViewStyled>

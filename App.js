@@ -5,6 +5,7 @@ import { loadAsync } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import IconF from "react-native-vector-icons/Feather";
 import Feed from './src/Feed';
 import Schedule from './src/Schedule';
 
@@ -40,7 +41,8 @@ export default function App() {
                 iconName = 'ios-home';
                 break;
               case 'Schedule':
-                iconName = focused ? 'ios-list-box' : 'ios-list';
+                iconName = focused ? 'calendar' : 'calendar';
+                return <IconF name={iconName} size={25} color={color} />
                 break;
               case 'Profile':
                 iconName = 'ios-person';
@@ -61,7 +63,8 @@ export default function App() {
             outline: 'none',
           },
           showLabel: false,
-          activeTintColor: '#FF5045'
+          activeTintColor: '#FF5045',
+          inactiveTintColor: '#fff'
         }}
       >
         <Tab.Screen name="Feed" component={Feed} options={{title: 'Лента'}} />
