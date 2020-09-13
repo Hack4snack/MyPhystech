@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'taggit',
     'event',
-    'taggit-serializer',
+    'taggit_serializer',
+    'tagging'
     # 'corsheaders',
 ]
 
@@ -80,27 +81,47 @@ WSGI_APPLICATION = 'MyPhystech.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        # 'OPTIONS': {
+                    # 'read_default_file': '/home/incredible/.my.cnf',
+                    # },
+        'OPTIONS': {
+                    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        'NAME': 'Rishel$myphystech',
+        'USER': 'Rishel',
+        'PASSWORD': 'e7hjYDdF9aJZ',
+        'HOST': 'Rishel.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
+    }
+}
+
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         # 'OPTIONS': {
-#                     # 'read_default_file': '/home/incredible/.my.cnf',
-#                     # },
-#         'OPTIONS': {
-#                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#         },
-#         'NAME': 'Rishel$myphystech',
-#         'USER': 'Rishel',
-#         'PASSWORD': 'e7hjYDdF9aJZ',
-#         'HOST': 'Rishel.mysql.pythonanywhere-services.com',
-#         'PORT': '3306',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'default',
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-    }
+REST_FRAMEWORK = {
+    'UNICODE_JSON': True,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
+    'DATETIME_FORMAT': '%H:%M %d.%m.%y',
+    'DATETIME_INPUT_FORMATS': '%H:%M %d.%m.%y',
+    'DATE_FORMAT': '%d.%m.%y',
+    'DATE_INPUT_FORMAT': '%d.%m.%y',
+    'TIME_FORMAT': '%H:%M',
+    'TIME_INPUT_FORMAT': '%H:%M',
 }
 
 

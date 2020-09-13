@@ -20,9 +20,9 @@ def home(request):
 @api_view(['GET'])
 def all_ev(request):
     es = Event.objects.all()
-    serializer = EventSerializer.serialize(es)
+    serializer = EventSerializer(es, many=True)
     # print(data)
-    return JsonResponse(serializer.data)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
 @api_view(['POST', 'PUT'])
@@ -37,28 +37,32 @@ def add_event(req):
 @api_view(['GET'])
 def last_events(req):
     latest_events_list = Event.objects.order_by('-start_time')[:5]
-    return HttpResponse(latest_events_list)
+    serializer = EventSerializer(latest_events_list, many=True)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
 @api_view(['GET'])
-def filter_events_by_tags(req):
-    tags = req.body
+def filter_events_by_tags(req, tags):
+    print(tags)
     latest_filtered_events = Event.objects.filter(tags__name__in=tags)
-    return HttpResponse(latest_filtered_events)
+    serializer = EventSerializer(latest_filtered_events, many=True)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
+
 
 @api_view(['GET'])
 def get_events(req, offset, limit):
     offset, limit = int(offset), int(limit)
     es = Event.objects.all()[offset:offset+limit]
-    serializer = EventSerializer.serialize('json', es)
-    return JsonResponse(serializer.data, ensure_ascii=False)
+    serializer = EventSerializer(es, many=True)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
+
 
 @login_required
 @api_view(['GET'])
 def get_schedule(req):
     es = Event.objects.filter(tags__name__in=req.user.group_number)
-    #serializers.serialize('json', es, stream=out)
-    return HttpResponse('Holy Shit!')
+    serializer = EventSerializer(es, many=True)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
 # @login_required

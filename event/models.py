@@ -2,14 +2,14 @@ from django.db import models
 from django.utils import timezone
 from taggit.managers import TaggableManager
 
+
 class Event(models.Model):
-    title = models.CharField(max_length=80, null=True)
+    title = models.CharField(max_length=80, blank=True, null=True)
     event_id = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=30, null=True)
+    location = models.CharField(max_length=30, blank=True, null=True)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
-    # time_str = models.CharField(max_length=10, blank=True, null=True)
     event_img_url = models.TextField(blank=True, null=True)
     group_img_url = models.TextField(blank=True, null=True)
     source_url = models.TextField(blank=True, null=True)
@@ -27,7 +27,7 @@ class Event(models.Model):
         return event
 
     class Meta:
-        ordering = ["-created_date", "-start_time"]
+        ordering = ["-start_time", "-created_date"]
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
