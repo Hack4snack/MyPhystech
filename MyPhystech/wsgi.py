@@ -11,7 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-import os
 import sys
 
 from .settings import BASE_DIR

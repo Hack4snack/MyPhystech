@@ -27,11 +27,14 @@ def all_ev(request):
 
 @api_view(['POST', 'PUT'])
 def add_event(req):
-    data = json.loads(req.read())
+    data = json.loads(req.read(), encoding='utf8')
+    group = data.pop('group', None)
+    date = data.pop('date', None)
+    data['group_img_url'] = group
     # raise Exception((type(data), type(req.read()), data))
     event = Event.objects.create(**data)
     event.save()
-    return HttpResponse(event.id)
+    return HttpResponse(event.event_id)
 
 
 @api_view(['GET'])
