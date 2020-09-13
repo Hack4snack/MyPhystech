@@ -42,25 +42,26 @@ def last_events(req):
 
 
 @api_view(['GET'])
-def filter_events_by_tags(req, tags):
+def filter_events_by_tags(req):
+    tags = [tag.strip() for tag in req.GET.get('tags').split(',')]
     print(tags)
-    latest_filtered_events = Event.objects.filter(tags__name__in=tags)
+    latest_filtered_events = Event.objects.filter(tags__name__in=tags).distinct()
     serializer = EventSerializer(latest_filtered_events, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
 @api_view(['GET'])
-def get_events(req, offset, limit):
-    offset, limit = int(offset), int(limit)
+def get_events(req):
+    offset, limit = int(req.GET.get('offset')), int(req.GET.get('limit'))
     es = Event.objects.all()[offset:offset+limit]
     serializer = EventSerializer(es, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
-@login_required
+# @login_required
 @api_view(['GET'])
 def get_schedule(req):
-    es = Event.objects.filter(tags__name__in=req.user.group_number)
+    es = Event.objects.filter(tags__name__in=req.GET.get('group'))
     serializer = EventSerializer(es, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
