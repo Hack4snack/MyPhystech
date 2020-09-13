@@ -3,10 +3,11 @@ import re
 import datetime as dt
 
 from .models import Event
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
+from .serializers import EventSerializer
 
 
 time_re = re.compile(r'^(?P<hours>\d\d):(?P<min>\d\d) (?P<day>\d+)-(?P<month>\d+)-(?P<year>\d{4})$')
@@ -19,12 +20,9 @@ def home(request):
 @api_view(['GET'])
 def all_ev(request):
     es = Event.objects.all()
-    with open('file.json', 'w', encoding='utf-8') as out:
-        serializers.serialize('json', es, stream=out)
-    with open('file.json', 'r', encoding='utf-8') as fd:
-        data = json.load(fd)
+    serializer = EventSerializer.serialize(es)
     # print(data)
-    return HttpResponse(json.dumps(data, ensure_ascii=False).encode('utf8'))
+    return JsonResponse(serializer.data)
 
 
 @api_view(['POST', 'PUT'])
@@ -52,16 +50,13 @@ def filter_events_by_tags(req):
 def get_events(req, offset, limit):
     offset, limit = int(offset), int(limit)
     es = Event.objects.all()[offset:offset+limit]
-    with open('file.json', 'w', encoding='utf-8') as out:
-        serializers.serialize('json', es, stream=out)
-    with open('file.json', 'r', encoding='utf-8') as fd:
-        data = json.load(fd)
-    return HttpResponse(json.dumps(data, ensure_ascii=False).encode('utf8'))
+    serializer = EventSerializer.serialize('json', es)
+    return JsonResponse(serializer.data, ensure_ascii=False)
 
 @login_required
 @api_view(['GET'])
 def get_schedule(req):
-    es = Events.objects.filter(tags__name__in=req.user.group_number)
+    es = Event.objects.filter(tags__name__in=req.user.group_number)
     #serializers.serialize('json', es, stream=out)
     return HttpResponse('Holy Shit!')
 

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'taggit',
     'event',
+    'taggit-serializer',
     # 'corsheaders',
 ]
 
@@ -79,20 +80,26 @@ WSGI_APPLICATION = 'MyPhystech.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         # 'OPTIONS': {
+#                     # 'read_default_file': '/home/incredible/.my.cnf',
+#                     # },
+#         'OPTIONS': {
+#                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#         'NAME': 'Rishel$myphystech',
+#         'USER': 'Rishel',
+#         'PASSWORD': 'e7hjYDdF9aJZ',
+#         'HOST': 'Rishel.mysql.pythonanywhere-services.com',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        # 'OPTIONS': {
-                    # 'read_default_file': '/home/incredible/.my.cnf',
-                    # },
-        'OPTIONS': {
-                    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'NAME': 'Rishel$myphystech',
-        'USER': 'Rishel',
-        'PASSWORD': 'e7hjYDdF9aJZ',
-        'HOST': 'Rishel.mysql.pythonanywhere-services.com',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
     }
 }
 
