@@ -11,6 +11,7 @@ class Event(models.Model):
     title = models.CharField(max_length=80, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=30, blank=True, null=True)
+    group = models.CharField(max_length=80, blank=True, null=True)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
     event_img_url = models.TextField(blank=True, null=True)
@@ -23,11 +24,12 @@ class Event(models.Model):
 
     created_date = models.DateTimeField(default=timezone.now)
 
-    @classmethod
-    def create(cls, **kwargs):
-        event = cls(**kwargs)
-        event.tags.add(kwargs['tags'])
-        return event
+#  НЕ ВЫЗЫВАЕТСЯ ХЗ почему
+    # @classmethod
+    # def create(cls, **kwargs):
+    #     event = cls(**kwargs)
+    #     event.tags.add(kwargs['tags'])
+    #     return event
 
     class Meta:
         ordering = ["-start_time", "-created_date"]

@@ -24,7 +24,7 @@ class NewTagListSerializerField(TagListSerializerField):
 
 class EventSerializer(TaggitSerializer, serializers.ModelSerializer):
 
-    tags = NewTagListSerializerField()
+    tags = TagListSerializerField()
 
     class Meta:
         model = Event

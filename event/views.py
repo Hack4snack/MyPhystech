@@ -28,10 +28,10 @@ def all_ev(request):
 @api_view(['POST', 'PUT'])
 def add_event(req):
     data = json.loads(req.read(), encoding='utf8')
-    group = data.pop('group', None)
-    data['group_img_url'] = group
+    tags = data.pop('tags', None)
     # raise Exception((type(data), type(req.read()), data))
     event = Event.objects.create(**data)
+    event.tags.add(*tags)
     event.save()
     return HttpResponse(event.event_id)
 
@@ -46,7 +46,6 @@ def last_events(req):
 @api_view(['GET'])
 def filter_events_by_tags(req):
     tags = [tag.strip() for tag in req.GET.get('tags').split(',')]
-    print(tags)
     latest_filtered_events = Event.objects.filter(tags__name__in=tags).distinct()
     serializer = EventSerializer(latest_filtered_events, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
@@ -64,7 +63,7 @@ def get_events(req):
 @api_view(['GET'])
 def get_schedule(req):
     month = req.GET.get('month')
-    es = Event.objects.filter(tags__name__in=req.GET.get('group'))
+    es = Event.objects.filter(tags__name=req.GET.get('group'))
     serializer = EventSerializer(es, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
