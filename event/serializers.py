@@ -28,7 +28,7 @@ class EventSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['title', 'description',
+        fields = ['id', 'title', 'description',
                   'location', 'start_time',
                   'event_img_url', 'group_img_url',
                   'source_url', 'repeat_mode', 'tags']
