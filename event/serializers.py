@@ -28,10 +28,27 @@ class EventSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['id', 'title', 'description',
-                  'location', 'start_time',
+        fields = ['id', 'group', 'title', 'description',
+                  'location', 'start_time', 'end_time'
                   'event_img_url', 'group_img_url',
                   'source_url', 'repeat_mode', 'tags']
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        instance = serializers.ModelSerializer.create(validated_data)
+        instance.tags.set(*tags)
+        return instance
+
+
+class EventUserSerializer(TaggitSerializer, serializers.ModelSerializer):
+
+    tags = TagListSerializerField()
+
+    class Meta:
+        model = Event
+        fields = ['id', 'title', 'description',
+                  'location', 'start_time', 'end_time',
+                  'repeat_mode', 'tags']
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')

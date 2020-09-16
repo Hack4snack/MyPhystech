@@ -30,7 +30,7 @@ from django.urls import include
 from django.urls import path
 
 urlpatterns += [
-     path('event/', include('event.urls')),
+     path('api/', include('event.urls')),
 ]
 
 from django.views.generic import RedirectView
