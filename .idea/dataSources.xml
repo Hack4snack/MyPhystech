@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="default" uuid="edebe02f-431f-4e98-aebc-3eac2fe8bbf6">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:D:\Hack\FCK\MyPhystech\default.sqlite3</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="default [2]" uuid="18b5d290-15b0-4c58-a146-a617fceaf57b">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:D:\Hack\FCK\default.sqlite3</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="myphystech" uuid="b482ad72-54e5-4593-85f4-449d5e67fb11">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="default" uuid="d0222840-a073-46b7-882b-2f38950e0189">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/default</jdbc-url>
     </data-source>
   </component>
 </project>

@@ -18,23 +18,20 @@ from django.urls import path, include
 
 from event import views
 
-
 urlpatterns = [
     path('', views.home),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
-
-from django.urls import include
-from django.urls import path
 
 urlpatterns += [
      path('api/', include('event.urls')),
+     path('user/', include('custom_user.urls')),
 ]
 
-from django.views.generic import RedirectView
 
-urlpatterns += [
-    path('', RedirectView.as_view(url='/event/', permanent=True)),
-]
+# from django.views.generic import RedirectView
+#
+# urlpatterns += [
+#     path('', RedirectView.as_view(url='/api/', permanent=True)),
+# ]

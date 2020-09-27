@@ -10,6 +10,5 @@ urlpatterns = [
     re_path(r'events', views.get_events),
     path('by_id', views.get_by_id),
     re_path(r'schedule', views.get_schedule),
-
 ]
 

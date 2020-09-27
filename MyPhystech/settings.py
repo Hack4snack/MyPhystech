@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit',
+    'django_use_email_as_username.apps.DjangoUseEmailAsUsernameConfig',
     'event',
     'taggit_serializer',
+    'social_django',
     # 'corsheaders',
+    'custom_user.apps.CustomUserConfig',
 ]
 
 MIDDLEWARE = [
@@ -80,29 +83,29 @@ WSGI_APPLICATION = 'MyPhystech.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        # 'OPTIONS': {
-                    # 'read_default_file': '/home/incredible/.my.cnf',
-                    # },
-        'OPTIONS': {
-                    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'NAME': 'Rishel$myphystech',
-        'USER': 'Rishel',
-        'PASSWORD': 'e7hjYDdF9aJZ',
-        'HOST': 'Rishel.mysql.pythonanywhere-services.com',
-        'PORT': '3306',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'default',
+#         'ENGINE': 'django.db.backends.mysql',
+#         # 'OPTIONS': {
+#                     # 'read_default_file': '/home/incredible/.my.cnf',
+#                     # },
+#         'OPTIONS': {
+#                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#         'NAME': 'Rishel$myphystech',
+#         'USER': 'Rishel',
+#         'PASSWORD': 'e7hjYDdF9aJZ',
+#         'HOST': 'Rishel.mysql.pythonanywhere-services.com',
+#         'PORT': '3306',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'default',
+    }
+}
 
 REST_FRAMEWORK = {
     'UNICODE_JSON': True,
@@ -141,6 +144,23 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AUTH_USER_MODEL = 'custom_user.Profile'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '573550369237-tqbictm228k59ncbio7bovpqpm0520j7.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0M-odORp7UBYoaeGBYtYzfad'
+
+LOGIN_URL = '/auth/login/google-oauth2/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 
 # Internationalization

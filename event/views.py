@@ -3,18 +3,23 @@ import re
 import datetime as dt
 
 from .models import Event
+from custom_user.models import Profile, UserSession
 from django.http import HttpResponse, JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
-from .serializers import EventSerializer
+from .serializers import EventSerializer, EventUserSerializer
 
 
 time_re = re.compile(r'^(?P<hours>\d\d):(?P<min>\d\d) (?P<day>\d+)-(?P<month>\d+)-(?P<year>\d{4})$')
 
+
 @api_view(['GET'])
 def home(request):
-    return HttpResponse('Here exist some events')
+    return HttpResponse('Here is home for MyPhystech')
 
 
 @api_view(['GET'])
@@ -51,20 +56,26 @@ def filter_events_by_tags(req):
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
+@login_required
 @api_view(['GET'])
 def get_events(req):
     offset, limit = int(req.GET.get('offset')), int(req.GET.get('limit'))
-    es = Event.objects.all()[offset:offset+limit]
+    session_key = req.session['session_key']
+    session = UserSession.objects.get(session=session_key)
+    user = session.user
+    es = Event.objects.filter(tags__name__in=user.subscribe_tags)[offset:offset+limit]
     serializer = EventSerializer(es, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
-# @login_required
+@login_required
 @api_view(['GET'])
 def get_schedule(req):
-    month = req.GET.get('month')
-    es = Event.objects.filter(tags__name=req.GET.get('group'))
-    serializer = EventSerializer(es, many=True)
+    session_key = req.session['session_key']
+    session = UserSession.objects.get(session=session_key)
+    user = session.user
+    es = Event.objects.filter(channel__in=user.scheduled_channels)
+    serializer = EventUserSerializer(es, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
@@ -73,24 +84,5 @@ def get_by_id(req):
     ids = [id for id in req.GET.get('id').split(',')]
     print(ids)
     latest_filtered_events = Event.objects.filter(id__in=ids).distinct()
-    serializer = EventSerializer(latest_filtered_events, many=True)
+    serializer = EventUserSerializer(latest_filtered_events, many=True)
     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
-
-
-# @login_required
-# @transaction.atomic
-# def update_profile(request):
-#     if request.method == 'POST':
-#         user_form = UserForm(request.POST, instance=request.user)
-#         profile_form = ProfileForm(request.POST, instance=request.user.profile)
-#         if user_form.is_valid() and profile_form.is_valid():
-#             user_form.save()
-#             profile_form.save()
-#             messages.success(request, _('Your profile was successfully updated!'))
-#             return redirect('settings:profile')
-#         else:
-#             messages.error(request, _('Please correct the error below.'))
-#     else:
-#         user_form = UserForm(instance=request.user)
-#         profile_form = ProfileForm(instance=request.user.profile)
-#     return
