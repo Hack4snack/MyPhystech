@@ -80,4 +80,20 @@ from django.contrib.sessions.models import Session
 
 class UserSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+    session_id = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+
+
+from django.contrib.auth.signals import user_logged_in
+
+
+def user_logged_in_handler(sender, request, user, **kwargs):
+    engine = settings.SESSION_ENGINE
+    session_key = request.session.create().session_key if not request.session.exists(request.session.session_key) else request.session.session_key
+
+    UserSession.objects.get_or_create(
+        user=user,
+        session=engine.SessionStore(session_key)
+    )
+
+
+user_logged_in.connect(user_logged_in_handler)
