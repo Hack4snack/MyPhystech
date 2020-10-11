@@ -34,12 +34,13 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'user_sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit',
     'django_use_email_as_username.apps.DjangoUseEmailAsUsernameConfig',
     'event',
+    'topics',
     'taggit_serializer',
     'social_django',
     # 'corsheaders',
@@ -49,13 +50,15 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'user_sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SESSION_ENGINE = 'user_sessions.backends.db'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -102,6 +105,23 @@ DATABASES = {
 
 # DATABASES = {
 #     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         # 'OPTIONS': {
+#                     # 'read_default_file': '/home/incredible/.my.cnf',
+#                     # },
+#         'OPTIONS': {
+#                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#         'NAME': 'sql7369035',
+#         'USER': 'sql7369035',
+#         'PASSWORD': 'zmFAaZ5rXL',
+#         'HOST': 'sql7.freesqldatabase.com',
+#         'PORT': '3306',
+#     }
+# }
+
+# DATABASES = {
+#     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': 'default',
 #     }
@@ -118,12 +138,12 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
     ],
-    'DATETIME_FORMAT': '%H:%M %d.%m.%y',
-    'DATETIME_INPUT_FORMATS': '%H:%M %d.%m.%y',
-    'DATE_FORMAT': '%d.%m.%y',
-    'DATE_INPUT_FORMAT': '%d.%m.%y',
-    'TIME_FORMAT': '%H:%M',
-    'TIME_INPUT_FORMAT': '%H:%M',
+    # 'DATETIME_FORMAT': '%H:%M %d.%m.%y',
+    # 'DATETIME_INPUT_FORMATS': '%H:%M %d.%m.%y',
+    # 'DATE_FORMAT': '%d.%m.%y',
+    # 'DATE_INPUT_FORMAT': '%d.%m.%y',
+    # 'TIME_FORMAT': '%H:%M',
+    # 'TIME_INPUT_FORMAT': '%H:%M',
 }
 
 
@@ -145,10 +165,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-]
+)
 
 AUTH_USER_MODEL = 'custom_user.Profile'
 
@@ -176,6 +196,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+SILENCED_SYSTEM_CHECKS = ['admin.E410']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

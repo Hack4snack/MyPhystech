@@ -8,6 +8,7 @@ from taggit.managers import TaggableManager
 
 class Event(models.Model):
     # event_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    parent_id = models.IntegerField(blank=True, null=True)
     event_id = models.IntegerField(blank=True, null=True)
 
     title = models.CharField(max_length=80, blank=True, null=True)
@@ -15,15 +16,16 @@ class Event(models.Model):
     location = models.CharField(max_length=30, blank=True, null=True)
 
     start_time = models.DateTimeField(blank=True, null=True)
-    end_time = models.TimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True)
 
     event_img_url = models.TextField(blank=True, null=True)
-    group_img_url = models.TextField(blank=True, null=True)
     source_url = models.TextField(blank=True, null=True)
 
     repeat_mode = models.CharField(max_length=20, default='once')  # once_week once_2week once
 
-    channel = models.CharField(max_length=80, blank=True, null=True)
+    channel = models.CharField(max_length=30, null=True, blank=True)
+    likes = models.IntegerField(blank=True, null=True, default=0)
+   # channel = models.ForeignKey('topics.Channel', on_delete=models.CASCADE)
 
     tags = TaggableManager()
 
@@ -45,21 +47,21 @@ class Event(models.Model):
 
     def __str__(self):
         s = "title: {}\n".format(self.title)
+        s += "parent_id: {}\n".format(self.parent_id)
         s += "event_id: {}\n".format(self.event_id)
         s += "description: {}\n".format(self.description)
         s += "location: {}\n".format(self.location)
         s += "start_time: {}\n".format(self.start_time)
         s += "end_time: {}\n".format(self.end_time)
         s += "event_img_url: {}\n".format(self.event_img_url)
-        s += "group_img_url: {}\n".format(self.group_img_url)
+        s += "source_url: {}\n".format(self.source_url)
         s += "repeat_mode: {}\n".format(self.repeat_mode)
         return s
 
 
-# class Channel(models.Model):
-#     channel = models.CharField(max_length=80, blank=True, null=True)
-
-
+class Like(models.Model):
+    event_id = models.IntegerField(blank=True, null=True)
+    user_id  = models.IntegerField(blank=True, null=True)
 
 # # class EventInstance(models.Model):
 # #     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4)

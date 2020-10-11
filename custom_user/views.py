@@ -1,28 +1,33 @@
 
 import json
-from django.core import serializers
-from django.contrib.sessions.serializers import JSONSerializer, PickleSerializer
+# from django.contrib.sessions.serializers import JSONSerializer, PickleSerializer
 from django.http import HttpResponse, JsonResponse
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
-from .models import Profile, UserSession
+
+from django_mysql.models import ListF
+from django.db.models import Q
+from .models import Profile
+from event.models import Event
+from event.serializers import EventSerializer
+from taggit.models import Tag
+from taggit_serializer.serializers import TagListSerializerField
+#from topics.models import Channel
+
 # from django.db.models import Model
 from django.core.exceptions import ObjectDoesNotExist
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
+from .accounts_helpers import verify_token
 
 
 @api_view(['POST'])
 def google_signup(req):
     token = req.GET.get('idToken')
     try:
-        # Specify the CLIENT_ID of the app that accesses the backend:
-        CLIENT_ID = '942480069892-05kgachoktolijpd718lpna2smq6rsdk.apps.googleusercontent.com'
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+        idinfo = verify_token(token)
 
         if idinfo is not None:
             try:
@@ -31,8 +36,10 @@ def google_signup(req):
                 user = Profile.objects.create(email=idinfo['email'])
                 user.save()
 
-            if not req.session.exists(req.session.session_key):
-                req.session.create()
+            login(req, user, backend='social_core.backends.google.GoogleOAuth2')
+
+            # if not req.session.exists(req.session.session_key):
+            #     req.session.create()
 
             if user is not None:
                 req.session['username'] = idinfo['name']
@@ -72,17 +79,6 @@ def signup(req):
         return HttpResponse()
 
 
-# def authentication(request):
-#     username = request.POST['username']
-#     password = request.POST['password']
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         login(request, user)
-#         return HttpResponse(True)
-#     else:
-#         return HttpResponse(False)
-
-
 def update_profile(req):
     # session_key = req.session['session_key']
     # session = UserSession.objects.get(session=session_key)
@@ -91,122 +87,127 @@ def update_profile(req):
     user.save()
 
 
-from django_mysql.models import ListF
-
-
 @login_required
-@api_view(['POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def subscribe_tags(req):
-    try:
+    user = req.session.user
+    if user is None:
+        return HttpResponse('User not found')
+    if req.method == "POST":
         tags = [tag.strip() for tag in req.POST.get('tags').split(',')]
-        session_key = req.session.session_key
-        user = Profile.objects.get('email'==req.session['email'])
         for tag in tags:
-            user.profile.subscribe_tags = ListF('subscribe_tags').append(tag)
+            t = Tag.objects.get(name=tag)
+            user.subscribe_tags.add(t)
         user.save()
         return HttpResponse(True)
-    except Exception as e:
-        return HttpResponse(e)
+    elif req.method == 'GET':
+        data = TagListSerializerField(user.subscribe_tags, many=True, read_only=True)
+        return JsonResponse({'subscribe_tags':data}, json_dumps_params={'ensure_ascii': False})
+    elif req.method == 'DELETE':
+        tags = [tag.strip() for tag in req.DELETE.get('tags').split(',')]
+        for tag in tags:
+            user.subscribe_tags.remove(tag)
 
 
 @login_required
-@api_view(['POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def subscribe_channels(req):
-    channels = [channel.strip() for channel in req.POST.get('channels').split(',')]
-    try:
-        session_key = req.session['session_key']
-        user = Profile.objects.get('email'==req.session['email'])
+    user = req.session.user
+    if user is None:
+        return HttpResponse('User not found')
+    if req.method == "POST":
+        channels = [channel.strip() for channel in req.POST.get('channels').split(',')]
         for channel in channels:
-            user.profile.subscribe_channels = ListF('subscribe_channels').append(channel)
+            user.subscribe_channels = ListF('subscribe_channels').append(channel)
         user.save()
         return HttpResponse(True)
-    except Exception as e:
-        return HttpResponse(e)
+    elif req.method == 'GET':
+        data = [ch.title for ch in user.subscribe_channels]
+        return JsonResponse({'subscribe_channels': data}, json_dumps_params={'ensure_ascii': False})
+    elif req.method == 'DELETE':
+        channels = [channel.strip() for channel in req.DELETE.get('channels').split(',')]
+        for channel in channels:
+            user.subscribe_channels = ListF('subscribe_channels').pop(channel)
 
 
 @login_required
-@api_view(['POST'])
-def schedule_tags(req):
-    try:
-        tags = [tag.strip() for tag in req.POST.get('tags').split(',')]
-        session_key = req.session['session_key']
-        user = Profile.objects.get('email'==req.session['email'])
-        for tag in tags:
-            user.profile.schedule_tags = ListF('schedule_tags').append(tag)
-        user.save()
-        return HttpResponse(True)
-    except Exception as e:
-        return HttpResponse(e)
+@api_view(['GET', 'POST', 'DELETE'])
+def schedule(req):
+    email = req.session['email']
+    user = Profile.objects.get(email=email)
+    if user is None:
+        return HttpResponse('User not found')
+    if req.method == 'GET':
+        month = req.GET.get('month')
+        # НЕПОНЯТНО БУДЕТ ЛИ РАБОТАТЬ
+        events = Event.objects.filter(start_time__month=month & (Q(channel__in=user.scheduled_channels) | Q(event_id__in=user.scheduled_events))).exclude(parent_id__in=user.ignore_list)
+        serializer = EventSerializer(events, many=True)
+        return JsonResponse(serializer.data, json_dumps_params={'ensure_ascii': False})
+    elif req.method == 'DELETE':
+        evid = req.DELETE.get('eventId')
+        event = Event.objects.get(id=evid)
+        user.ignore_list = ListF('ignore_list').append(event.parent_id)
+        if event.parent_id in user.scheduled_events:
+            user.scheduled_events = ListF('scheduled_events').remove(evid)
+    elif req.method == 'POST':
+        chid = req.POST.get('channelId')
+        evid = req.POST.get('eventId')
+        user.scheduled_channels = ListF('scheduled_channels').append(chid)
+        user.scheduled_events = ListF('scheduled_events').append(evid)
+
+
+# @login_required
+# @api_view(['GET', 'POST', 'DELETE'])
+# def schedule_tags(req):
+#     user = req.session.user
+#     if user is None:
+#         return HttpResponse('User not found')
+#     if req.method == 'POST':
+#         tags = [tag.strip() for tag in req.POST.get('tags').split(',')]
+#         user.schedule_tags.add(tags)
+#         user.save()
+#         return HttpResponse(True)
+#     elif req.method == 'GET':
+#         data = TagListSerializerField(user.schedule_tags, many=True, read_only=True)
+#         return JsonResponse({'schedule_tags': data}, json_dumps_params={'ensure_ascii': False})
+#     elif req.method == 'DELETE':
+#         tags = [tag.strip() for tag in req.DELETE.get('tags').split(',')]
+#         for tag in tags:
+#             user.schedule_tags.remove(tag)
 
 
 @login_required
-@api_view(['POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def schedule_channels(req):
-    channels = [channel.strip() for channel in req.POST.get('channels').split(',')]
-    try:
-        session_key = req.session['session_key']
-        user = Profile.objects.get('email'==req.session['email'])
+    user = req.session.user
+    if user is None:
+        return HttpResponse('User not found')
+
+    if req.method == 'POST':
+        channels = [channel.strip() for channel in req.POST.get('channels').split(',')]
         for channel in channels:
-            user.profile.schedule_channels = ListF('schedule_channels').append(channel)
+            user.schedule_channels = ListF('schedule_channels').append(channel)
         user.save()
         return HttpResponse(True)
-    except Exception as e:
-        return HttpResponse(e)
-
-# @login_required
-# @api_view(['GET'])
-# def get_(req):
-#     ids = [id for id in req.GET.get('id').split(',')]
-#     print(ids)
-#     latest_filtered_events = Event.objects.filter(id__in=ids).distinct()
-#     serializer = EventUserSerializer(latest_filtered_events, many=True)
-#     return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})
+    elif req.method == 'GET':
+        data = user.schedule_channels
+        return JsonResponse({'schedule_channels': data}, json_dumps_params={'ensure_ascii': False})
+    elif req.method == 'DELETE':
+        channels = [channel.strip() for channel in req.DELETE.get('channels').split(',')]
+        for channel in channels:
+            user.schedule_channels = ListF('schedule_channels').pop(channel)
 
 
-
-
-# @api_view(['GET'])
-# @authentication_classes([SessionAuthentication, BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def example_view(request, format=None):
-#     content = {
-#         'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-#         'auth': unicode(request.auth),  # None
-#     }
-#     return Response(content)
-
-# def user_login(request):
-#     if request.method == 'POST':
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             user = authenticate(username=cd['username'], password=cd['password'])
-#             if user is not None:
-#                 if user.is_active:
-#                     login(request, user)
-#                     return HttpResponse('Authenticated successfully')
-#                 else:
-#                     return HttpResponse('Disabled account')
-#             else:
-#                 return HttpResponse('Invalid login')
-#     else:
-#         form = LoginForm()
-#     return JsonResponse(request)
-
-# @login_required
-# @transaction.atomic
-# def update_profile(request):
-#     if request.method == 'POST':
-#         user_form = UserForm(request.POST, instance=request.user)
-#         profile_form = ProfileForm(request.POST, instance=request.user.profile)
-#         if user_form.is_valid() and profile_form.is_valid():
-#             user_form.save()
-#             profile_form.save()
-#             messages.success(request, _('Your profile was successfully updated!'))
-#             return redirect('settings:profile')
-#         else:
-#             messages.error(request, _('Please correct the error below.'))
-#     else:
-#         user_form = UserForm(instance=request.user)
-#         profile_form = ProfileForm(instance=request.user.profile)
-#     return
+@login_required
+@api_view(['GET'])
+def feed(req):
+    user = req.session.user
+    if user is None:
+        return HttpResponse('User not found')
+    offset, limit = int(req.GET.get('offset')), int(req.GET.get('limit'))
+    user = req.session.user
+    es = Event.objects.filter(tags__name__in=user.subscribe_tags)[offset:offset+limit]
+    if es is None:
+        es = Event.objects.all()[offset:offset+limit]
+    serializer = EventSerializer(es, many=True)
+    return JsonResponse(serializer.data, safe=False, json_dumps_params={'ensure_ascii': False})

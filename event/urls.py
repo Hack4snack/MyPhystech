@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 from . import views
 
 
@@ -6,9 +6,11 @@ urlpatterns = [
     path('', views.home, name='index'),
     path('all/', views.all_ev),
     path('add', views.add_event),
-    re_path(r'filter', views.filter_events_by_tags),
-    re_path(r'events', views.get_events),
+    # path('events', views.get_events),
     path('by_id', views.get_by_id),
-    re_path(r'schedule', views.get_schedule),
+    path('schedule', views.get_schedule),
+    path('search', views.search),
+    path('feed', views.feed),
+    path('likes', views.likes),
 ]
 

@@ -16,17 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from event import views
+# from event import views
 
 urlpatterns = [
-    path('', views.home),
+    path('', include('user_sessions.urls', 'user_sessions')),
     path('admin/', admin.site.urls),
 ]
 
 
 urlpatterns += [
-     path('api/', include('event.urls')),
-     path('user/', include('custom_user.urls')),
+    path('events/', include('event.urls')),
+    path('users/', include('custom_user.urls')),
+    path('topics/', include('topics.urls'))
 ]
 
 

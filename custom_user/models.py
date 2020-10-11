@@ -44,9 +44,6 @@ class ProfileManager(BaseUserManager):
 
 from django.db import models
 
-from django.contrib.auth.models import User
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 from django_mysql.models import ListCharField
 
 
@@ -60,40 +57,17 @@ class Profile(AbstractUser):
     group_number = models.CharField(max_length=10)
     subscribe_channels = ListCharField(base_field=models.CharField(max_length=50), blank=True, max_length=500)
     subscribe_tags = ListCharField(base_field=models.CharField(max_length=50), blank=True, max_length=500)
-    scheduled_channels = ListCharField(base_field=models.CharField(max_length=50), blank=True, max_length=500)
+    scheduled_channels = ListCharField(base_field=models.IntegerField(), blank=True, max_length=500)
     scheduled_tags = ListCharField(base_field=models.CharField(max_length=50), blank=True, max_length=500)
+    scheduled_events = ListCharField(base_field=models.IntegerField(), blank=True, max_length=500)
+    ignore_list = ListCharField(base_field=models.IntegerField(), blank=True, max_length=500)
 
     # @property
     # def subscribe_channels(self):
-    #     return json.loads(self._subscribe_channels)
-    #
+        # return json.loads(self._subscribe_channels)
+
     # @subscribe_channels.setter
     # def subscribe_channels(self, channel):
     #     self._subscribe_channels = json.dumps(channel)
 
     objects = ProfileManager()
-
-
-from django.conf import settings
-from django.contrib.sessions.models import Session
-
-
-class UserSession(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    session_id = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
-
-
-from django.contrib.auth.signals import user_logged_in
-
-
-def user_logged_in_handler(sender, request, user, **kwargs):
-    engine = settings.SESSION_ENGINE
-    session_key = request.session.create().session_key if not request.session.exists(request.session.session_key) else request.session.session_key
-
-    UserSession.objects.get_or_create(
-        user=user,
-        session=engine.SessionStore(session_key)
-    )
-
-
-user_logged_in.connect(user_logged_in_handler)

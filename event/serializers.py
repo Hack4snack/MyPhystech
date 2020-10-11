@@ -2,6 +2,7 @@ from rest_framework import serializers
 from event.models import Event
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
+from topics.serializers import ChannelSerializer
 
 import six
 
@@ -25,13 +26,14 @@ class NewTagListSerializerField(TagListSerializerField):
 class EventSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     tags = TagListSerializerField()
+    # channel = ChannelSerializer(source='channel', required=False)
 
     class Meta:
         model = Event
         fields = ['id', 'channel', 'title', 'description',
                   'location', 'start_time', 'end_time',
                   'event_img_url', 'group_img_url',
-                  'source_url', 'repeat_mode', 'tags']
+                  'source_url', 'repeat_mode', 'likes', 'tags']
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
