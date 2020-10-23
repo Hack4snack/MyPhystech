@@ -3,11 +3,14 @@ import { StyleSheet, Text, View, Image, TextInput, FlatList, SafeAreaView, Statu
 import styled from 'styled-components/native';
 import { loadAsync } from 'expo-font';
 import Dash from 'react-native-dash';
+import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchEvents } from '../actions';
 import Menu from './Menu';
 import Event from './Event';
 
 
-export default function Feed() {
+function PersonalFeed({events, fetchEvents}) {
   const [loaded, setLoaded] = useState(false);
 
   async function _loadAssetsAsync() {
@@ -18,8 +21,10 @@ export default function Feed() {
   }
 
   useEffect(() => {
+    fetchEvents({});
     _loadAssetsAsync();
   }, []);
+
   if (!loaded) {
     return null;
   }
@@ -31,10 +36,10 @@ export default function Feed() {
         <Menu />
         <Logo>My Phystech</Logo>
       </TopLine>
-      <TextInputStyled placeholder={'Поиск'} />
+      {/*<TextInputStyled placeholder={'Поиск'} />*/}
       <SafeAreaViewStyled>
       <FlatList
-        data={[{id: 1}, {id: 2}, {id: 3}]}
+        data={events}
         renderItem={props => <Event {...props} />}
         keyExtractor={item => String(item.id)}
         ItemSeparatorComponent={() => <Dash dashColor={'#2B3543'} style={{height: 1}} />}
@@ -44,8 +49,15 @@ export default function Feed() {
   );
 }
 
+const mapStateToProps = state => ({
+  events: state.events.list,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({fetchEvents}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(PersonalFeed);
+
 const Wrapper = styled.View`
-  padding-top: 20px;
   width: 100%;
   height: 100%;
   background: #161F2A;

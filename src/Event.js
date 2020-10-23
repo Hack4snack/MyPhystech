@@ -4,37 +4,50 @@ import styled from 'styled-components/native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconF from 'react-native-vector-icons/Feather';
 import { Badge } from 'react-native-elements';
+import moment from 'moment';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addToSchedule } from "../actions";
 import LikeButton from "./LikeButton";
 import AddToCalendarButton from "./AddToCalendarButton";
 
 const maxLimit = 88;
 
-export default function Event() {
+function Event({item, addToSchedule}) {
   const [ expanded, setExpanded ] = useState(false);
   const [ liked, setLiked ] = useState(false);
   const [ added, setAdded ] = useState(false);
-  const fullText = 'Сегодня снова под девяткой всех желающих ждет возможность покидать мячик. Сетка тоже есть. Начало с 19.30.';
+  const fullText = item.description;
+
+  useEffect(() => {
+    if(added) {
+      addToSchedule({id: item.id});
+      console.debug('123123');
+    }
+  }, [added]);
 
   return (
     <Wrapper>
       <UpperLine>
         <Public>
-          <PublicAvatar source={{uri: 'https://sun1-30.userapi.com/c624827/v624827921/2d963/3VDSs6ocPks.jpg?ava=1'}}></PublicAvatar>
-          <PublicTitle>Любительский волейбол МФТИ</PublicTitle>
+          <PublicAvatar source={{uri: item.group_img_url}}></PublicAvatar>
+          <PublicTitle>{item.public_name}</PublicTitle>
         </Public>
-        <PublicationDate>2ч назад</PublicationDate>
+        <PublicationDate>{moment(item.publication_time).fromNow()}</PublicationDate>
       </UpperLine>
-      <Preview source={{uri: 'https://img4.goodfon.ru/wallpaper/nbig/4/2d/low-poly-voleibol-igra-miach-sportsmen-voleibolist.jpg'}}></Preview>
+      <Preview source={{uri: item.event_img_url}}></Preview>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
         <LikeButton liked={liked} setLiked={setLiked} />
         <AddToCalendarButton added={added} setAdded={setAdded} />
       </View>
       <Title>
-        Вечером возле 4-ки
+        {item.title}
       </Title>
       <Info>
-        <Tag>Спорт</Tag>
-        <Time>Завтра, 11:00 - 12:30</Time>
+        <TagsWrapper>
+          {item.tags.map(t => <Tag key={t}>{t}</Tag>)}
+        </TagsWrapper>
+        <Time>{moment(item.start_time).format('DD.MM.YYYY HH:mm')}</Time>
       </Info>
       <FullText>
         {fullText.length > maxLimit && !expanded ?
@@ -44,6 +57,10 @@ export default function Event() {
     </Wrapper>
   );
 }
+
+const mapDispatchToProps = dispatch => bindActionCreators({addToSchedule}, dispatch);
+
+export default connect(null, mapDispatchToProps)(Event);
 
 const Wrapper = styled.View`
   width: 100%;
@@ -93,6 +110,7 @@ const Preview = styled.Image`
 const Tag = styled.Text`
   color: #FF5045;
   font-weight: bold;
+  margin-right: 5px;
 `;
 
 const Time = styled.Text`
@@ -121,4 +139,8 @@ const Info = styled.View`
   justify-content: space-between;
   margin-bottom: 3px;
   margin-top: 3px;
+`;
+
+const TagsWrapper = styled.View`
+  flex-flow: row;
 `;

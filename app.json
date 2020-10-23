@@ -21,6 +21,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "android": {
+      "package": "com.Hack4snack.MyPhystech",
+      "versionCode": 1
     }
   }
 }
